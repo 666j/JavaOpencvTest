@@ -1,0 +1,86 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="true"
+    android:background="#ce3d3e"
+    android:orientation="vertical" >
+
+    <include layout="@layout/title_f"></include>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#f2f4f5"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        >
+        <org.opencv.android.JavaCameraView
+            android:id="@+id/fd_activity_surface_view"
+            android:layout_width="fill_parent"
+            android:layout_height="400dp" />
+    </LinearLayout>
+
+    <include layout="@layout/divide_line"></include>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/show_figure_btn"
+        android:background="#ffffff"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        >
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="显示手指个数"
+            android:textSize="15sp"
+            />
+        <EditText
+            android:id="@+id/figure_num"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2.5"
+            android:layout_gravity="center"
+            android:gravity="right"
+            android:hint="0"
+            android:textColor="#727272"
+            android:textSize="15sp"
+            android:background="@null"
+
+            />
+
+    </LinearLayout>
+        <include layout="@layout/divide_line"></include>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/show_hcitest3"
+        android:background="#ffffff"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        >
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="光强识别"
+            android:textSize="15sp"
+            />
+        <ImageView
+            android:id="@+id/img_bg"
+            android:layout_width="40dip"
+            android:layout_height="40dip"
+            android:layout_gravity="center"
+            android:background="@drawable/theme_bg1"
+            />
+
+    </LinearLayout>
+</LinearLayout>

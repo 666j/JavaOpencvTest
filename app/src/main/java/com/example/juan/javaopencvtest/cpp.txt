@@ -1,0 +1,156 @@
+#include "stdafx.h"
+#include "MeanFilter.h"
+#include<iostream>  
+#include <opencv2/core/core.hpp> 
+#include <opencv2/highgui/highgui.hpp>  
+#include<vector>
+#include <math.h>
+
+
+using namespace std;
+using namespace cv;
+
+MeanFilter::MeanFilter()
+{
+}
+
+void MeanFilter::integral_image(const Mat & input, int width, int height, Vec<int, 4>* pint) {
+	int* src = (int *)input.data;
+	cout << (sizeof(src) / sizeof(src[0])) << endl;
+	Vec<int, 4> pixelo;
+	int  index,index1;
+	for (int yi = 0; yi < height; yi++) {
+		cout << "yi," << yi << endl;
+		for (int xi = 0; xi < width; xi++)
+		{
+			//cout << "****" << endl;
+			index = 4 * (yi*width + xi);
+		    //	cout << "+++" << endl;
+			if (xi == 0 && yi == 0){
+				pixelo[0] = src[0];
+				pixelo[1] = src[1];
+				pixelo[2] = src[2];
+				pixelo[3] = src[3];
+			}
+			else{
+				//cout << "---" << endl;
+				if (yi != 0){
+					pixelo = pint[(yi - 1)*width + xi];
+				}
+				else{
+					pixelo[0] = 0;
+					pixelo[1] = 0;
+					pixelo[2] = 0;
+					pixelo[3] = 0;
+
+				}
+				
+				//cout << "2" << endl;
+				for (int t = 0; t <= xi; t++){
+					index1 = 4 * (yi*width + t);
+					
+					 
+ 					pixelo[0] += src[index1];
+					pixelo[1] += src[index1 + 1];
+					pixelo[2] += src[index1 + 2];
+					pixelo[3] += src[index1 + 3];
+					
+				}
+				//cout << "3" << endl;
+			}
+			//cout <<pixelo << endl;
+		
+			*(pint++) = pixelo;
+			//pint[yi*width + xi] = pixelo;
+
+			
+			//cout << "5" << endl;
+			//cout << "xi:" << xi << "index:" << yi*width + xi << "pint[]" << pixelo << endl;
+			//cout << "6" << endl;
+			//cout << xi << yi << "pixel[0]:" << src[index] << "pixel[1]:" << pixelo[1] << "pixel[2]:" << pixelo[2] << endl;
+			//cout << xi << yi << "pixelo:" << pixelo << endl;
+			
+			//cout <<xi << yi << pixelo << endl;
+			//sum.at<Vec4b>(yi, xi) = pixelo;
+			
+		}
+	}
+}
+void MeanFilter::integral(const Mat & input, int width, int height, int sstride, int *pint, int istride) {
+	/*int *prow;
+	memset(prow, 0, sizeof(int)*width);
+	uchar *src = get_pixel(input, 0, 0);
+	for (int yi = 0; yi<height; yi++, src += sstride, pint += istride) {
+		uchar *px = src;
+	
+		cout << "yi:" << yi<<"sstride:" <<sstride<< endl;
+		for (int xi = 0; xi<width; xi++,px+=4) {
+			cout << "xi:" << xi << endl;
+			int index = 4 * (yi*width + xi);
+			if (xi == 0&&yi ==0){
+				prow[0] = *px;
+				pint[index] = px[0];   //for the first pixel
+				pint[index+1] = px[1];   //for the first pixel
+				pint[index+2] = px[2];   //for the first pixel
+				pint[index+3] =px[3];   //for the first pixel
+			}
+			else{
+				prow[xi] += *px;
+				/*pint[index] = pint[index-4] + prow[xi][0];
+				pint[index+1] = pint[index - 3] + prow[xi][1];
+				pint[index+2] = pint[index - 2] + prow[xi][2];
+				pint[index+3] = pint[index - 1] + prow[xi][3];
+				
+			}
+			cout << "xi:" << xi << "," << pint[index] << endl;
+		}
+	}
+	delete[]prow;*/
+}
+
+
+void MeanFilter::toMeanFilter(const Mat &input, Mat &output, int window_size){
+	Vec<int,4> v;
+	v[0] = 345;
+	cout <<"v:"<< v << endl;
+	int pxcount = window_size*window_size;
+	int inputWidth = input.cols;
+	int inputHeight = input.rows;
+	uchar *inputData = input.data;
+	int step = input.step;
+	int nc = input.channels();
+	Vec<int,4>* pint = new Vec<int,4>[input.step*inputHeight];
+	
+	Mat sum(inputHeight, inputWidth, CV_8UC4);//Êä³öÍ¼Æ¬
+	//integral(input, inputWidth, inputHeight, step, & pint, step);
+	integral_image(input, inputWidth, inputHeight,pint);
+	int w = (window_size - 1) / 2;
+	Vec4b pixelo;
+	
+	for (int yi = 0; yi < inputHeight; ++yi) {
+		for (int xi = 0; xi < inputWidth; ++xi)
+		{
+			for (int i = 0; i < 4; i++){
+				int s1 = (pint)[(yi + w)*inputWidth + xi + w+i][0];
+				int s2 = (pint)[(yi - w - 1)*inputWidth + xi - w - 1 + i][1];
+				int s3 = (pint)[(yi - w - 1)*inputWidth + xi + w + i][2];
+				int s4 = (pint)[(yi + w)*inputWidth + xi - w - 1 + i][3];
+				//cout << s1<<"s2, "<< s2<<"s3" << s3<<"s4" << s4 << endl;
+				pixelo[i] = (s1 + s2 + s3 + s4) / pxcount;
+			}
+			
+			
+			output.at<Vec4b>(yi, xi) = pixelo;
+		}
+		cout << pixelo << endl;
+	}
+	imshow("showImage", output);
+	waitKey();
+}
+
+uchar*  MeanFilter:: get_pixel(const Mat &img, int x, int y) { // return (int*)( (char*)img.data+y*img.step*4+x*3*4 );
+	return (uchar*)((char*)img.data + y*img.step + x * 3);
+}
+
+MeanFilter::~MeanFilter(){
+}
